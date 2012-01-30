@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>My First App</title>
+	<link rel="stylesheet" href="sp://import/css/adam.css">
+	<link rel="stylesheet" href="bluevia.css">
+	<script type="text/javascript" src="jquery.min.js"></script>
+	<script type="text/javascript">
+	
+	var sp = getSpotifyApi(1);
+	var m = sp.require('sp://import/scripts/api/models');
+	var v = sp.require('sp://import/scripts/api/views');
+
+	function init() {
+		console.log("YES I IS A RUNNING");
+	
+		playNextTrack();
+	
+	}
+	
+	function wait(){
+		console.log("waiting ....");
+	
+		t=setTimeout("playNextTrackIfFinished()",5000);
+	
+	}
+	
+	function playNextTrackIfFinished() {
+		
+		console.log("playNextTrackIfFinished()");
+		
+		var currentTrack = m.player.track;
+		 if (currentTrack == null) {
+		     console.log("No track currently playing !!!");
+			 playNextTrack();
+		 } else {
+			console.log("track still playing so go and wait");
+			wait();
+		}
+		
+	}
+	
+	// play a track in the player
+	function playTrack(trackdata) {
+		console.log(trackdata.track.href);
+		$("#start").html(trackdata.djdata.name + " is the DJ and he likes " + trackdata.djdata.bands );
+	    m.player.play(trackdata.track.href);
+		wait();
+	}
+	
+	
+	function playNextTrack(){
+		
+		console.log("playNextTrack()");
+		
+		var url = "http://blazing-day-9404.herokuapp.com/dj/nexttrack";
+
+		$.getJSON(url, function(data) {
+			console.log(data.trackdata.track.name)
+			playTrack(data.trackdata)
+	        
+	    }) ;
+		
+	}
+
+	function skip() {
+		    playNextTrack();
+	}
+	
+	</script>
+	
+	
+</head>
+<body onload="init()">
+
+<h1 id="start">loading .... </h1>
+	
+<button class="new-button" onClick="skip()">Skip Track</button>
+
+</body>
+</html>
